@@ -15,6 +15,8 @@ public class JsoupUtils {
 
     // http://agentdockingopac.featurelib.libsou.com/showhome/search/showSearch?schoolId=1082
     // http://agentdockingopac.featurelib.libsou.com/showhome/searchlist/opacSearchList?search=java&xc=3&schoolId=1082&centerDomain=&searchtype=title
+    // http://agentdockingopac.featurelib.libsou.com/showhome/searchlist/opacSearchList?search=java&xc=3&schoolId=1082&centerDomain=&searchtype=title&page=1
+
     private static String url = "http://agentdockingopac.featurelib.libsou.com/showhome/searchlist/opacSearchList?";
 
     //显示搜索结果的数目
@@ -68,7 +70,7 @@ public class JsoupUtils {
                 type = "isbn";
                 break;
         }
-        return url + "search=" + key + "&xc=3&schoolId=1082&centerDomain=&searchtype=" + type;
+        return url + "search=" + key + "&xc=3&schoolId=1082&centerDomain=&searchtype=" + type + "&page=1";
     }
 
     //获取上一页的url

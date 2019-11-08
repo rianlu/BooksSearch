@@ -37,4 +37,14 @@ public class Book {
     public void setNum(String num) {
         this.num = num;
     }
+
+    @Override
+    public String toString() {
+        return "Book{" +
+                "title='" + title + '\'' +
+                ", publish='" + publish + '\'' +
+                ", count='" + count + '\'' +
+                ", num='" + num + '\'' +
+                '}';
+    }
 }

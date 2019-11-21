@@ -19,5 +19,14 @@
         android:id="@+id/searchFragment"
         android:name="com.example.l.bookssearch.SearchFragment"
         android:label="结果"
-        tools:layout="@layout/fragment_search" />
+        tools:layout="@layout/fragment_search" >
+        <action
+            android:id="@+id/action_searchFragment_to_detailFragment"
+            app:destination="@id/detailFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/detailFragment"
+        android:name="com.example.l.bookssearch.DetailFragment"
+        android:label="详细信息"
+        tools:layout="@layout/fragment_detail" />
 </navigation>

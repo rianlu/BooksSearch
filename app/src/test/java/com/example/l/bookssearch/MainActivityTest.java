@@ -2,6 +2,9 @@ package com.example.l.bookssearch;
 
 import android.util.Log;
 
+import com.example.l.bookssearch.model.Book;
+import com.example.l.bookssearch.utils.JsoupUtils;
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -21,17 +24,9 @@ public class MainActivityTest {
 
     @Test
     public void analyzeHtml() {
-        String url = "http://agentdockingopac.featurelib.libsou.com/showhome/searchlist/opacSearchList?search=java&xc=3&schoolId=1082&centerDomain=&searchtype=title";
         try {
-            Document doc = Jsoup.connect(url).get();
-            Elements elements = doc.select("li");
-            System.out.println(elements.size());
-            for (Element element : elements){
-                Elements selects = element.select("p");
-                for (Element select : selects){
-                    System.out.println("analyzeHtml: " + select.text());
-                }
-            }
+            String imageUrl = JsoupUtils.getBookDetailFromDouBan("9787121269394");
+            System.out.println(imageUrl);
         } catch (IOException e) {
             e.printStackTrace();
         }

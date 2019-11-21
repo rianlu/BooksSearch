@@ -1,6 +1,5 @@
 package com.example.l.bookssearch.adapter;
 
-import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -8,7 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.example.l.bookssearch.Book;
+import com.example.l.bookssearch.model.Book;
 import com.example.l.bookssearch.R;
 
 import java.util.List;
@@ -18,6 +17,11 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
     private List<Book> list;
     public MyAdapter(List<Book> list){
         this.list = list;
+    }
+    private OnItemCLickListener itemCLickListener;
+
+    public void setItemCLickListener(OnItemCLickListener itemCLickListener) {
+        this.itemCLickListener = itemCLickListener;
     }
 
     @NonNull
@@ -47,28 +51,39 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         TextView rvPublish;
         TextView rvCount;
         TextView rvNum;
-        public ViewHolder(@NonNull View itemView) {
+        ViewHolder(@NonNull View itemView) {
             super(itemView);
             rvTitle = itemView.findViewById(R.id.rv_title);
             rvPublish = itemView.findViewById(R.id.rv_publish);
             rvCount = itemView.findViewById(R.id.rv_count);
             rvNum = itemView.findViewById(R.id.rv_num);
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    int position = getAdapterPosition();
+                    itemCLickListener.onItemClick(view, position);
+                }
+            });
         }
 
-        public TextView getRvTitle() {
+        TextView getRvTitle() {
             return rvTitle;
         }
 
-        public TextView getRvPublish() {
+        TextView getRvPublish() {
             return rvPublish;
         }
 
-        public TextView getRvCount() {
+        TextView getRvCount() {
             return rvCount;
         }
 
-        public TextView getRvNum() {
+        TextView getRvNum() {
             return rvNum;
         }
+    }
+
+    public interface OnItemCLickListener {
+        void onItemClick(View view, int position);
     }
 }

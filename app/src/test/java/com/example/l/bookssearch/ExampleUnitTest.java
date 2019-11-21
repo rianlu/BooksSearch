@@ -1,7 +1,6 @@
 package com.example.l.bookssearch;
 
-import android.util.Log;
-
+import com.example.l.bookssearch.model.Book;
 import com.example.l.bookssearch.utils.JsoupUtils;
 
 import org.jsoup.Jsoup;

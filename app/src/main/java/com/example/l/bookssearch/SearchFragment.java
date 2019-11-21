@@ -1,15 +1,16 @@
 package com.example.l.bookssearch;
 
 
+import android.app.ProgressDialog;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.button.MaterialButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -18,11 +19,14 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 
 import com.example.l.bookssearch.adapter.MyAdapter;
 import com.example.l.bookssearch.databinding.FragmentSearchBinding;
+import com.example.l.bookssearch.model.Book;
 import com.example.l.bookssearch.utils.JsoupUtils;
 
 import org.jsoup.Jsoup;
@@ -53,11 +57,11 @@ public class SearchFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_search, container, false);
-        viewModel = ViewModelProviders.of(getActivity()).get(MyViewModel.class);
+        viewModel = ViewModelProviders.of(requireActivity()).get(MyViewModel.class);
         url = viewModel.getUrl();
         initUI();
         binding.setViewModel(viewModel);
-        binding.setLifecycleOwner(getActivity());
+        binding.setLifecycleOwner(requireActivity());
 
         return binding.getRoot();
     }
@@ -71,6 +75,8 @@ public class SearchFragment extends Fragment {
 
     public void refreshView(){
 
+        ProgressDialog dialog = ProgressDialog.show(requireActivity(), "提示", "加载中...");
+        viewModel.setUrl(url);
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -80,8 +86,14 @@ public class SearchFragment extends Fragment {
                         // 获得图书的基本信息
                         List<Book> bookList = JsoupUtils.getTotalBooks(doc);
                         viewModel.getBookList().postValue(bookList);
-                        String pagInfo = "当前在第" + url.substring(url.length() - 1) + "页";
+                        String pagInfo;
+                        if (bookList != null && bookList.size() > 0) {
+                            pagInfo = "当前在第" + url.substring(url.length() - 1) + "页";
+                        } else {
+                            pagInfo = "暂无数据";
+                        }
                         viewModel.getPageInfo().postValue(pagInfo);
+                        dialog.dismiss();
                     }
                 } catch (IOException e) {
                     Log.d(TAG, "run: " + e.getMessage());
@@ -110,33 +122,40 @@ public class SearchFragment extends Fragment {
             }
         });
 
-        viewModel.getBookList().observe(getActivity(), new Observer<List<Book>>() {
+        viewModel.getBookList().observe(requireActivity(), new Observer<List<Book>>() {
             @Override
             public void onChanged(@Nullable List<Book> books) {
                 MyAdapter adapter = new MyAdapter((viewModel.getBookList().getValue()));
+                adapter.setItemCLickListener(new MyAdapter.OnItemCLickListener() {
+                    @Override
+                    public void onItemClick(View view, int position) {
+                        NavController controller = Navigation.findNavController(view);
+                        Bundle bundle = new Bundle();
+                        bundle.putString("detailUrl", JsoupUtils.getTotalBooksLinks(doc).get(position));
+                        controller.navigate(R.id.action_searchFragment_to_detailFragment, bundle);
+                    }
+                });
                 binding.rv.setAdapter(adapter);
             }
         });
 
-        binding.setClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (view.getId() == R.id.previous_btn){
-                    url = JsoupUtils.getPreviousUrl(doc);
-                    if (!TextUtils.isEmpty(url)){
-                        refreshView();
-                    }else {
-                        Toast.makeText(getActivity(), "已经是第一页了", Toast.LENGTH_SHORT).show();
-                    }
-                }else{
-                    url = JsoupUtils.getNextUrl(doc);
-                    if (!TextUtils.isEmpty(url)){
-                        refreshView();
-                    }else {
-                        Toast.makeText(getActivity(), "已经是最后一页了", Toast.LENGTH_SHORT).show();
-                    }
+        binding.setClickListener(view -> {
+            if (view.getId() == R.id.previous_btn){
+                url = JsoupUtils.getPreviousUrl(doc);
+                if (!TextUtils.isEmpty(url)){
+                    refreshView();
+                }else {
+                    Toast.makeText(getActivity(), "已经是第一页了", Toast.LENGTH_SHORT).show();
+                }
+            }else{
+                url = JsoupUtils.getNextUrl(doc);
+                if (!TextUtils.isEmpty(url)){
+                    refreshView();
+                }else {
+                    Toast.makeText(getActivity(), "已经是最后一页了", Toast.LENGTH_SHORT).show();
                 }
             }
         });
+
     }
 }

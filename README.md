@@ -1,4 +1,3 @@
 # BooksSearch
 图书搜索APP
-
-Update:接口目前失效
+更新将添加Glide，并且全部换成AndroidX

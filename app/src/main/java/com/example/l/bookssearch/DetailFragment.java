@@ -1,15 +1,12 @@
 package com.example.l.bookssearch;
 
 
-import android.content.Intent;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
@@ -18,7 +15,6 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.bumptech.glide.Glide;
 import com.example.l.bookssearch.databinding.FragmentDetailBinding;
-import com.example.l.bookssearch.model.Book;
 import com.example.l.bookssearch.utils.JsoupUtils;
 import com.example.l.bookssearch.viewmodel.BookViewModel;
 
@@ -67,9 +63,11 @@ public class DetailFragment extends Fragment {
         @Override
         protected void onPostExecute(String s) {
             Log.d(TAG, "onPostExecute: " + s);
-            Glide.with(requireActivity())
-                    .load(s)
-                    .into(binding.imageView);
+            if (s != null && !"".equals(s)) {
+                Glide.with(requireActivity())
+                        .load(s)
+                        .into(binding.imageView);
+            }
         }
     }
 }

@@ -1,10 +1,5 @@
 package com.example.l.bookssearch.utils;
 
-import android.app.Activity;
-import android.content.Context;
-import android.util.Log;
-
-import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProviders;
 
@@ -20,8 +15,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static android.content.ContentValues.TAG;
-
 public class JsoupUtils {
 
     // example
@@ -33,6 +26,8 @@ public class JsoupUtils {
 
     private static JsoupUtils jsoupUtils = null;
     private List<String> bookUrlList = null;
+    private String previousUrl = null;
+    private String nextUrl = null;
 
     private JsoupUtils() {
     }
@@ -45,7 +40,7 @@ public class JsoupUtils {
     }
 
     //获取搜索结果的数目
-    public String getTotalCount(String url) {
+    public int getTotalCount(String url) {
 
         Document doc = null;
         try {
@@ -54,9 +49,10 @@ public class JsoupUtils {
             e.printStackTrace();
         }
         if (doc != null) {
-            return doc.getElementsByClass("num").text();
+            String info = doc.getElementsByClass("num").text();
+            return Integer.parseInt(info.substring(info.indexOf("共") + 1, info.indexOf("条")));
         }
-        return null;
+        return 0;
     }
 
     //显示所有书的信息
@@ -89,6 +85,16 @@ public class JsoupUtils {
                 // 保存详情链接
                 String detailUrl = element.select("a").attr("href");
                 bookUrlList.add(bathUrl + detailUrl);
+            }
+
+            // 保存上下页url
+            Element previousElement = doc.select("a.last").first();
+            if (previousElement != null) {
+                previousUrl = previousElement.attr("abs:href");
+            }
+            Element nextElement = doc.select("a.next").first();
+            if (nextElement != null) {
+                nextUrl = nextElement.attr("abs:href");
             }
             return list;
         } catch (IOException e) {
@@ -127,56 +133,45 @@ public class JsoupUtils {
     }
 
     //获取上一页的url
-    public String getPreviousUrl(String previousUrl) {
-        Document doc = null;
-        try {
-            doc = Jsoup.connect(previousUrl).get();
-            Element element = doc.select("a.last").first();
-            return element != null ? element.attr("abs:href") : null;
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
+    public String getPreviousUrl() {
+        return previousUrl;
     }
 
     //获取下一页的url
-    public String getNextUrl(String nextUrl) {
-        Document doc = null;
-        try {
-            doc = Jsoup.connect(nextUrl).get();
-            Element element = doc.select("a.next").first();
-            return element != null ? element.attr("abs:href") : null;
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
+    public String getNextUrl() {
+        return nextUrl;
     }
 
-    public Book getDetailBook(String url) {
+    private Book getDetailBook(String url) {
 
         Book book = new Book();
         Document doc = null;
         try {
             doc = Jsoup.connect(url).get();
             String title = doc.select("div.tit").select("h1").text();
-            String author = doc.select("div.tit").select("p").text();
+            String authorContent = doc.select("div.tit").select("p").text().trim();
+            String author = authorContent.substring(authorContent.indexOf(":") + 1);
             String publish = null;
             String num = doc.select("div.tableCon").select("td").get(0).text();
             String location = doc.select("div.tableCon").select("td").get(3).text();
-            String isbn = "ISBN:";
+            String isbn = null;
             String description = null;
             Elements pElements = doc.select("div.catalog").select("p");
             for (int i = 0; i < pElements.size(); i++) {
-                String content = pElements.get(i).text();
+                String content = pElements.get(i).text().trim();
                 if (content.contains("出版发行项")) {
-                    publish = content;
+                    publish = content.substring(content.indexOf(":") + 1);
                 }
+
                 if (content.contains("ISBN及定价")) {
-                    content = content.replace("-", "").trim();
-                    isbn = content.substring(content.indexOf(":"), content.indexOf(":") + 13);
+                    // 部份书没有isbn
+                    if (content.substring(content.indexOf(":")).length() > 13) {
+                        content = content.replace("-", "");
+                        isbn = content.substring(content.indexOf(":") + 1, content.indexOf(":") + 13);
+                    }
                 }
                 if (content.contains("提要文摘附注")) {
-                    description = content;
+                    description = content.substring(content.indexOf(":") + 1);
                 }
             }
             book.setTitle(title);

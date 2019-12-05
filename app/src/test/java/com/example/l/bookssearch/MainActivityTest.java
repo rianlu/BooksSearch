@@ -27,11 +27,7 @@ public class MainActivityTest {
 
     @Test
     public void analyzeHtml() {
-        List<Book> list = jsoupUtils.getTotalBooks("http://agentdockingopac.featurelib.libsou.com/showhome/searchlist/opacSearchList?search=android&xc=3&schoolId=1082&centerDomain=&searchtype=title&page=1");
-        System.out.println(list.toString());
-        String url = jsoupUtils.getBookDetailUrl(1);
-        System.out.println(url);
-        Book book = jsoupUtils.getDetailBook(url);
-        System.out.println(book);
+        int totalCount = jsoupUtils.getTotalCount("http://agentdockingopac.featurelib.libsou.com/showhome/searchlist/opacSearchList?search=java&xc=3&schoolId=1082&centerDomain=&searchtype=title&page=1");
+        System.out.println(totalCount);
     }
 }

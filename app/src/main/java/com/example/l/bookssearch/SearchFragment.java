@@ -8,6 +8,7 @@ import android.graphics.Rect;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Looper;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -20,7 +21,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.navigation.NavController;
@@ -125,7 +125,7 @@ public class SearchFragment extends Fragment {
 
         binding.setClickListener(view -> {
             if (view.getId() == R.id.previous_btn){
-                String url = jsoupUtils.getPreviousUrl(viewModel.getUrl());
+                String url = jsoupUtils.getPreviousUrl();
                 if (!TextUtils.isEmpty(url)){
                     // 把上一页的url存放到viewModel
                     viewModel.setUrl(url);
@@ -134,7 +134,7 @@ public class SearchFragment extends Fragment {
                     Toast.makeText(getActivity(), "已经是第一页了", Toast.LENGTH_SHORT).show();
                 }
             }else{
-                String url = jsoupUtils.getNextUrl(viewModel.getUrl());
+                String url = jsoupUtils.getNextUrl();
                 if (!TextUtils.isEmpty(url)){
                     // 把下一页的url存放到viewModel
                     viewModel.setUrl(url);
@@ -161,6 +161,14 @@ public class SearchFragment extends Fragment {
             List<Book> bookList = jsoupUtils.getTotalBooks(viewModel.getUrl());
             Log.d(TAG, "doInBackground: " + bookList.toString());
             viewModel.getBookList().postValue(bookList);
+
+            // 设置当前页信息
+            int count = jsoupUtils.getTotalCount(viewModel.getUrl());
+            if (count != 0) {
+                int pageSize = count % 20 == 0 ? count / 20 : count / 20 + 1;
+                int currentPage = Integer.parseInt(viewModel.getUrl().substring(viewModel.getUrl().lastIndexOf("page=") + 5));
+                viewModel.getPageInfo().postValue("第" + currentPage + "页，共" + pageSize + "页");
+            }
             return null;
         }
 
@@ -173,8 +181,8 @@ public class SearchFragment extends Fragment {
     private void hideSoftKeyboard(View view)
     {
         if (view != null) {
-            InputMethodManager inputmanger = (InputMethodManager) view.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-            inputmanger.hideSoftInputFromWindow(view.getWindowToken(), 0);
+            InputMethodManager inputMethodManager = (InputMethodManager) view.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+            inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
     }
 }

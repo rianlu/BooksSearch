@@ -1,37 +1,25 @@
 package com.example.l.bookssearch;
 
 
-import android.arch.lifecycle.ViewModelProviders;
-import android.databinding.DataBindingUtil;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.design.button.MaterialButton;
-import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.EditText;
 import android.widget.RadioGroup;
 import android.widget.SearchView;
-import android.widget.Spinner;
 import android.widget.Toast;
 
+import androidx.databinding.DataBindingUtil;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
-import androidx.navigation.ui.NavigationUI;
 
 import com.example.l.bookssearch.databinding.FragmentHomeBinding;
 import com.example.l.bookssearch.utils.JsoupUtils;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import static android.support.constraint.Constraints.TAG;
-
+import com.example.l.bookssearch.viewmodel.BookViewModel;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -39,8 +27,10 @@ import static android.support.constraint.Constraints.TAG;
 public class HomeFragment extends Fragment {
 
     private int typeId;
-    private MyViewModel viewModel;
+    private BookViewModel viewModel;
     private FragmentHomeBinding binding;
+    private String TAG = "HomeFragment";
+    private JsoupUtils jsoupUtils;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -52,8 +42,24 @@ public class HomeFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_home, container, false);
-        viewModel = ViewModelProviders.of(requireActivity()).get(MyViewModel.class);
+        viewModel = ViewModelProviders.of(requireActivity()).get(BookViewModel.class);
+        jsoupUtils = JsoupUtils.getInstance();
+        initView();
+        return binding.getRoot();
+    }
 
+    private void startSearch(String key) {
+        if (TextUtils.isEmpty(key)) {
+            Toast.makeText(getActivity(), "请输入关键词！", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        String url = jsoupUtils.getSearchUrl(key, typeId);
+        viewModel.setUrl(url);
+        NavController controller = Navigation.findNavController(getView());
+        controller.navigate(R.id.action_homeFragment_to_searchFragment);
+    }
+
+    private void initView() {
         binding.radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup radioGroup, int i) {
@@ -90,17 +96,5 @@ public class HomeFragment extends Fragment {
                 startSearch(String.valueOf(binding.searchView.getQuery()));
             }
         });
-        return binding.getRoot();
-    }
-
-    public void startSearch(String key) {
-        if (TextUtils.isEmpty(key)) {
-            Toast.makeText(getActivity(), "请输入关键词！", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        String url = JsoupUtils.getSearchUrl(key, typeId);
-        viewModel.setUrl(url);
-        NavController controller = Navigation.findNavController(getView());
-        controller.navigate(R.id.action_homeFragment_to_searchFragment);
     }
 }

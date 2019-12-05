@@ -1,25 +1,26 @@
-package com.example.l.bookssearch;
+package com.example.l.bookssearch.viewmodel;
 
-import android.arch.lifecycle.MutableLiveData;
-import android.arch.lifecycle.ViewModel;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.ViewModel;
 
 import com.example.l.bookssearch.model.Book;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MyViewModel extends ViewModel {
+public class BookViewModel extends ViewModel {
 
     private String url;
     private MutableLiveData<String> pageInfo;
     private MutableLiveData<List<Book>> bookList;
     private MutableLiveData<Book> detailBook;
 
-    String getUrl() {
+    public String getUrl() {
         return url;
     }
 
-    void setUrl(String url) {
+    public void setUrl(String url) {
         this.url = url;
     }
 
@@ -31,10 +32,10 @@ public class MyViewModel extends ViewModel {
         return pageInfo;
     }
 
-    MutableLiveData<List<Book>> getBookList() {
+    public MutableLiveData<List<Book>> getBookList() {
         if (bookList == null) {
             bookList = new MutableLiveData<>();
-            bookList.setValue(new ArrayList<Book>());
+            bookList.setValue(new ArrayList<>());
         }
         return bookList;
     }
@@ -42,9 +43,7 @@ public class MyViewModel extends ViewModel {
     public MutableLiveData<Book> getDetailBook() {
         if (detailBook == null) {
             detailBook = new MutableLiveData<>();
-            Book book = new Book();
-            book.setTitle("暂无数据");
-            detailBook.setValue(book);
+            detailBook.postValue(new Book());
         }
         return detailBook;
     }

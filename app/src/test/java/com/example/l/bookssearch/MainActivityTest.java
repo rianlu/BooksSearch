@@ -13,22 +13,25 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.util.List;
 
 import static org.junit.Assert.*;
 
 public class MainActivityTest {
 
+    JsoupUtils jsoupUtils;
     @Before
     public void setUp() throws Exception {
+        jsoupUtils = JsoupUtils.getInstance();
     }
 
     @Test
     public void analyzeHtml() {
-        try {
-            String imageUrl = JsoupUtils.getBookDetailFromDouBan("9787121269394");
-            System.out.println(imageUrl);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        List<Book> list = jsoupUtils.getTotalBooks("http://agentdockingopac.featurelib.libsou.com/showhome/searchlist/opacSearchList?search=android&xc=3&schoolId=1082&centerDomain=&searchtype=title&page=1");
+        System.out.println(list.toString());
+        String url = jsoupUtils.getBookDetailUrl(1);
+        System.out.println(url);
+        Book book = jsoupUtils.getDetailBook(url);
+        System.out.println(book);
     }
 }

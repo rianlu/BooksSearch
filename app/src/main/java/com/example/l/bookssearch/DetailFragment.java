@@ -1,36 +1,36 @@
 package com.example.l.bookssearch;
 
 
-import android.arch.lifecycle.ViewModelProviders;
-import android.databinding.DataBindingUtil;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
+import androidx.annotation.Nullable;
+import androidx.databinding.DataBindingUtil;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProviders;
+
+import com.bumptech.glide.Glide;
 import com.example.l.bookssearch.databinding.FragmentDetailBinding;
 import com.example.l.bookssearch.model.Book;
 import com.example.l.bookssearch.utils.JsoupUtils;
-
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-
-import java.io.IOException;
-
-import static android.support.constraint.Constraints.TAG;
-
+import com.example.l.bookssearch.viewmodel.BookViewModel;
 
 /**
  * A simple {@link Fragment} subclass.
  */
 public class DetailFragment extends Fragment {
 
-    private Document doc;
-    private MyViewModel viewModel;
+    private BookViewModel viewModel;
     private FragmentDetailBinding binding;
+    private JsoupUtils jsoupUtils;
+    private String TAG = "DetailFragment";
 
     public DetailFragment() {
         // Required empty public constructor
@@ -42,31 +42,34 @@ public class DetailFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_detail, container, false);
-        viewModel = ViewModelProviders.of(requireActivity()).get(MyViewModel.class);
+        viewModel = ViewModelProviders.of(requireActivity()).get(BookViewModel.class);
         binding.setViewModel(viewModel);
         binding.setLifecycleOwner(requireActivity());
+        jsoupUtils = JsoupUtils.getInstance();
         return binding.getRoot();
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        String detailUrl = getArguments().getString("detailUrl");
-        loadData(detailUrl);
+
+        new ImageAsyncTask().execute();
     }
 
-    private void loadData(String url) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    doc = Jsoup.connect(url).get();
-                    Book book = JsoupUtils.getDetailBook(doc);
-                    viewModel.getDetailBook().postValue(book);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }).start();
+    class ImageAsyncTask extends AsyncTask<Void, Void, String> {
+
+        @Override
+        protected String doInBackground(Void... voids) {
+
+            return jsoupUtils.getBookImageFromBaiduBike(viewModel.getDetailBook().getValue().getTitle());
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            Log.d(TAG, "onPostExecute: " + s);
+            Glide.with(requireActivity())
+                    .load(s)
+                    .into(binding.imageView);
+        }
     }
 }

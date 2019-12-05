@@ -2,37 +2,38 @@ package com.example.l.bookssearch;
 
 
 import android.app.ProgressDialog;
-import android.arch.lifecycle.Observer;
-import android.arch.lifecycle.ViewModelProviders;
+import android.content.Context;
 import android.content.Intent;
-import android.databinding.DataBindingUtil;
 import android.graphics.Rect;
+import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Looper;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.databinding.DataBindingUtil;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.l.bookssearch.adapter.MyAdapter;
 import com.example.l.bookssearch.databinding.FragmentSearchBinding;
 import com.example.l.bookssearch.model.Book;
 import com.example.l.bookssearch.utils.JsoupUtils;
+import com.example.l.bookssearch.viewmodel.BookViewModel;
 
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-
-import java.io.IOException;
 import java.util.List;
 
 
@@ -41,11 +42,10 @@ import java.util.List;
  */
 public class SearchFragment extends Fragment {
 
-    private String TAG = "Search";
-    private Document doc;
-    private String url;
-    private MyViewModel viewModel;
+    private String TAG = "SearchFragment";
+    private BookViewModel viewModel;
     private FragmentSearchBinding binding;
+    private JsoupUtils jsoupUtils;
 
     public SearchFragment() {
         // Required empty public constructor
@@ -57,12 +57,13 @@ public class SearchFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_search, container, false);
-        viewModel = ViewModelProviders.of(requireActivity()).get(MyViewModel.class);
-        url = viewModel.getUrl();
-        initUI();
+        viewModel = ViewModelProviders.of(requireActivity()).get(BookViewModel.class);
+        jsoupUtils = JsoupUtils.getInstance();
+
+        initView();
+
         binding.setViewModel(viewModel);
         binding.setLifecycleOwner(requireActivity());
-
         return binding.getRoot();
     }
 
@@ -70,44 +71,11 @@ public class SearchFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        hideSoftKeyboard(getView());
         refreshView();
     }
 
-    public void refreshView(){
-
-        ProgressDialog dialog = ProgressDialog.show(requireActivity(), "提示", "加载中...");
-        viewModel.setUrl(url);
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    doc = Jsoup.connect(url).get();
-                    if (doc != null){
-                        // 获得图书的基本信息
-                        List<Book> bookList = JsoupUtils.getTotalBooks(doc);
-                        viewModel.getBookList().postValue(bookList);
-                        String pagInfo;
-                        if (bookList != null && bookList.size() > 0) {
-                            pagInfo = "当前在第" + url.substring(url.length() - 1) + "页";
-                        } else {
-                            pagInfo = "暂无数据";
-                        }
-                        viewModel.getPageInfo().postValue(pagInfo);
-                        dialog.dismiss();
-                    }
-                } catch (IOException e) {
-                    Log.d(TAG, "run: " + e.getMessage());
-                    Looper.prepare();
-                    Toast.makeText(getActivity(), "请求超时", Toast.LENGTH_SHORT).show();
-                    Looper.loop();
-                    e.printStackTrace();
-                }
-            }
-        }).start();
-
-    }
-
-    public void initUI() {
+    private void initView() {
 
         RecyclerView.LayoutManager manager = new LinearLayoutManager(getActivity());
         binding.rv.setLayoutManager(manager);
@@ -129,10 +97,26 @@ public class SearchFragment extends Fragment {
                 adapter.setItemCLickListener(new MyAdapter.OnItemCLickListener() {
                     @Override
                     public void onItemClick(View view, int position) {
-                        NavController controller = Navigation.findNavController(view);
-                        Bundle bundle = new Bundle();
-                        bundle.putString("detailUrl", JsoupUtils.getTotalBooksLinks(doc).get(position));
-                        controller.navigate(R.id.action_searchFragment_to_detailFragment, bundle);
+
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                String detailUrl = jsoupUtils.getBookDetailUrl(position);
+                                if (jsoupUtils.checkBookFormat(detailUrl, requireActivity())) {
+                                    requireActivity().runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            NavController controller = Navigation.findNavController(view);
+                                            controller.navigate(R.id.action_searchFragment_to_detailFragment);
+                                        }
+                                    });
+                                } else {
+                                    Toast.makeText(getContext(), "当前图书不符合查询格式，将使用浏览器打开", Toast.LENGTH_SHORT).show();
+                                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(detailUrl));
+                                    startActivity(intent);
+                                }
+                            }
+                        }).start();
                     }
                 });
                 binding.rv.setAdapter(adapter);
@@ -141,21 +125,56 @@ public class SearchFragment extends Fragment {
 
         binding.setClickListener(view -> {
             if (view.getId() == R.id.previous_btn){
-                url = JsoupUtils.getPreviousUrl(doc);
+                String url = jsoupUtils.getPreviousUrl(viewModel.getUrl());
                 if (!TextUtils.isEmpty(url)){
+                    // 把上一页的url存放到viewModel
+                    viewModel.setUrl(url);
                     refreshView();
                 }else {
                     Toast.makeText(getActivity(), "已经是第一页了", Toast.LENGTH_SHORT).show();
                 }
             }else{
-                url = JsoupUtils.getNextUrl(doc);
+                String url = jsoupUtils.getNextUrl(viewModel.getUrl());
                 if (!TextUtils.isEmpty(url)){
+                    // 把下一页的url存放到viewModel
+                    viewModel.setUrl(url);
                     refreshView();
                 }else {
                     Toast.makeText(getActivity(), "已经是最后一页了", Toast.LENGTH_SHORT).show();
                 }
             }
         });
+    }
 
+    private void refreshView() {
+        new BookListAsyncTask().execute();
+    }
+
+
+    class BookListAsyncTask extends AsyncTask<Void, Void, Void> {
+
+        ProgressDialog dialog = ProgressDialog.show(requireActivity(), "提示", "加载中...");
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            // 获得图书的基本信息
+            List<Book> bookList = jsoupUtils.getTotalBooks(viewModel.getUrl());
+            Log.d(TAG, "doInBackground: " + bookList.toString());
+            viewModel.getBookList().postValue(bookList);
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            dialog.dismiss();
+        }
+    }
+
+    private void hideSoftKeyboard(View view)
+    {
+        if (view != null) {
+            InputMethodManager inputmanger = (InputMethodManager) view.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+            inputmanger.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
     }
 }

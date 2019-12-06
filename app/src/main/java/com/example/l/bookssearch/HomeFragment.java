@@ -54,7 +54,9 @@ public class HomeFragment extends Fragment {
             return;
         }
         String url = jsoupUtils.getSearchUrl(key, typeId);
+        Log.d(TAG, "startSearch: " + typeId);
         viewModel.setUrl(url);
+        Log.d(TAG, "startSearch: " + viewModel.getUrl());
         NavController controller = Navigation.findNavController(getView());
         controller.navigate(R.id.action_homeFragment_to_searchFragment);
     }
@@ -66,13 +68,13 @@ public class HomeFragment extends Fragment {
                 Log.d(TAG, "onCheckedChanged: i=" + i);
                 switch (i) {
                     case R.id.book_name:
-                        typeId = 1;
+                        typeId = 0;
                         break;
                     case R.id.author:
-                        typeId = 2;
+                        typeId = 1;
                         break;
                     case R.id.isbn:
-                        typeId = 4;
+                        typeId = 3;
                         break;
                 }
                 Log.d(TAG, "onCheckedChanged: typeId" + typeId);

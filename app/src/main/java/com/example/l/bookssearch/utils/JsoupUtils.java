@@ -91,10 +91,14 @@ public class JsoupUtils {
             Element previousElement = doc.select("a.last").first();
             if (previousElement != null) {
                 previousUrl = previousElement.attr("abs:href");
+            } else {
+                previousUrl = null;
             }
             Element nextElement = doc.select("a.next").first();
             if (nextElement != null) {
                 nextUrl = nextElement.attr("abs:href");
+            } else {
+                nextUrl = null;
             }
             return list;
         } catch (IOException e) {

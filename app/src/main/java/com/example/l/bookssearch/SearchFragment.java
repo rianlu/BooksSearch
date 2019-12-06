@@ -147,6 +147,7 @@ public class SearchFragment extends Fragment {
     }
 
     private void refreshView() {
+        Log.d(TAG, "refreshView: " + viewModel.getUrl());
         new BookListAsyncTask().execute();
     }
 
@@ -168,6 +169,8 @@ public class SearchFragment extends Fragment {
                 int pageSize = count % 20 == 0 ? count / 20 : count / 20 + 1;
                 int currentPage = Integer.parseInt(viewModel.getUrl().substring(viewModel.getUrl().lastIndexOf("page=") + 5));
                 viewModel.getPageInfo().postValue("第" + currentPage + "页，共" + pageSize + "页");
+            } else {
+                viewModel.getPageInfo().postValue("无搜索结果");
             }
             return null;
         }

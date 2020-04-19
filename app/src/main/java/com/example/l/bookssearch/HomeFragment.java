@@ -18,7 +18,7 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
 import com.example.l.bookssearch.databinding.FragmentHomeBinding;
-import com.example.l.bookssearch.utils.JsoupUtils;
+import com.example.l.bookssearch.utils.JsoupUtil;
 import com.example.l.bookssearch.viewmodel.BookViewModel;
 
 /**
@@ -30,7 +30,7 @@ public class HomeFragment extends Fragment {
     private BookViewModel viewModel;
     private FragmentHomeBinding binding;
     private String TAG = "HomeFragment";
-    private JsoupUtils jsoupUtils;
+    private JsoupUtil jsoupUtil;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -43,7 +43,7 @@ public class HomeFragment extends Fragment {
 
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_home, container, false);
         viewModel = ViewModelProviders.of(requireActivity()).get(BookViewModel.class);
-        jsoupUtils = JsoupUtils.getInstance();
+        jsoupUtil = JsoupUtil.getInstance();
         initView();
         return binding.getRoot();
     }
@@ -53,9 +53,10 @@ public class HomeFragment extends Fragment {
             Toast.makeText(getActivity(), "请输入关键词！", Toast.LENGTH_SHORT).show();
             return;
         }
-        String url = jsoupUtils.getSearchUrl(key, typeId);
+        String url = jsoupUtil.getSearchUrl(key, typeId);
         Log.d(TAG, "startSearch: " + typeId);
         viewModel.setUrl(url);
+        viewModel.setDestroyed(false);
         Log.d(TAG, "startSearch: " + viewModel.getUrl());
         NavController controller = Navigation.findNavController(getView());
         controller.navigate(R.id.action_homeFragment_to_searchFragment);

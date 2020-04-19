@@ -33,7 +33,7 @@
                 app:layout_constraintGuide_percent="0.15" />
 
             <TextView
-                android:id="@+id/textView2"
+                android:id="@+id/tvTitle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
@@ -47,14 +47,14 @@
                 app:layout_constraintTop_toTopOf="@+id/guideline7" />
 
             <TextView
-                android:id="@+id/textView3"
+                android:id="@+id/tvAuthor"
                 android:layout_width="215dp"
                 android:layout_height="wrap_content"
                 android:text="@{viewModel.detailBook.author}"
-                app:layout_constraintBottom_toTopOf="@+id/textView4"
+                app:layout_constraintBottom_toTopOf="@+id/tvPublish"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="@+id/guideline11"
-                app:layout_constraintTop_toBottomOf="@+id/textView2" />
+                app:layout_constraintTop_toBottomOf="@+id/tvTitle" />
 
             <ImageView
                 android:id="@+id/imageView"
@@ -77,34 +77,34 @@
                 app:layout_constraintGuide_percent="0.4" />
 
             <TextView
-                android:id="@+id/textView4"
+                android:id="@+id/tvPublish"
                 android:layout_width="215dp"
                 android:layout_height="wrap_content"
                 android:text="@{viewModel.detailBook.publish}"
-                app:layout_constraintBottom_toTopOf="@+id/textView6"
-                app:layout_constraintEnd_toEndOf="@+id/textView3"
-                app:layout_constraintStart_toStartOf="@+id/textView3"
-                app:layout_constraintTop_toBottomOf="@+id/textView3" />
+                app:layout_constraintBottom_toTopOf="@+id/tvNum"
+                app:layout_constraintEnd_toEndOf="@+id/tvAuthor"
+                app:layout_constraintStart_toStartOf="@+id/tvAuthor"
+                app:layout_constraintTop_toBottomOf="@+id/tvAuthor" />
 
             <TextView
-                android:id="@+id/textView5"
+                android:id="@+id/tvLocation"
                 android:layout_width="215dp"
                 android:layout_height="wrap_content"
                 android:text="@{viewModel.detailBook.location}"
-                app:layout_constraintBottom_toTopOf="@+id/textView9"
-                app:layout_constraintEnd_toEndOf="@+id/textView6"
-                app:layout_constraintStart_toStartOf="@+id/textView6"
-                app:layout_constraintTop_toBottomOf="@+id/textView6" />
+                app:layout_constraintBottom_toTopOf="@+id/tvIsbn"
+                app:layout_constraintEnd_toEndOf="@+id/tvNum"
+                app:layout_constraintStart_toStartOf="@+id/tvNum"
+                app:layout_constraintTop_toBottomOf="@+id/tvNum" />
 
             <TextView
-                android:id="@+id/textView6"
+                android:id="@+id/tvNum"
                 android:layout_width="215dp"
                 android:layout_height="wrap_content"
                 android:text="@{viewModel.detailBook.num}"
-                app:layout_constraintBottom_toTopOf="@+id/textView5"
-                app:layout_constraintEnd_toEndOf="@+id/textView4"
-                app:layout_constraintStart_toStartOf="@+id/textView4"
-                app:layout_constraintTop_toBottomOf="@+id/textView4" />
+                app:layout_constraintBottom_toTopOf="@+id/tvLocation"
+                app:layout_constraintEnd_toEndOf="@+id/tvPublish"
+                app:layout_constraintStart_toStartOf="@+id/tvPublish"
+                app:layout_constraintTop_toBottomOf="@+id/tvPublish" />
 
             <androidx.constraintlayout.widget.Guideline
                 android:id="@+id/guideline12"
@@ -148,14 +148,14 @@
                 app:layout_constraintTop_toTopOf="@+id/guideline13" />
 
             <TextView
-                android:id="@+id/textView9"
+                android:id="@+id/tvIsbn"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:text="@{viewModel.detailBook.isbn}"
                 app:layout_constraintBottom_toTopOf="@+id/textView7"
-                app:layout_constraintEnd_toEndOf="@+id/textView5"
-                app:layout_constraintStart_toStartOf="@+id/textView5"
-                app:layout_constraintTop_toBottomOf="@+id/textView5" />
+                app:layout_constraintEnd_toEndOf="@+id/tvLocation"
+                app:layout_constraintStart_toStartOf="@+id/tvLocation"
+                app:layout_constraintTop_toBottomOf="@+id/tvLocation" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </FrameLayout>
 </layout>

@@ -1,5 +1,7 @@
 package com.example.l.bookssearch.utils;
 
+import android.util.Log;
+
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProviders;
 
@@ -15,7 +17,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class JsoupUtils {
+public class JsoupUtil {
 
     // example
     // http://agentdockingopac.featurelib.libsou.com/showhome/search/showSearch?schoolId=1082
@@ -24,19 +26,20 @@ public class JsoupUtils {
 
     private final String bathUrl = "http://agentdockingopac.featurelib.libsou.com/";
 
-    private static JsoupUtils jsoupUtils = null;
+    private static JsoupUtil jsoupUtil = null;
     private List<String> bookUrlList = null;
     private String previousUrl = null;
     private String nextUrl = null;
+    private String TAG = "JsoupUtil";
 
-    private JsoupUtils() {
+    private JsoupUtil() {
     }
 
-    public static synchronized JsoupUtils getInstance() {
-        if (jsoupUtils == null) {
-            jsoupUtils = new JsoupUtils();
+    public static synchronized JsoupUtil getInstance() {
+        if (jsoupUtil == null) {
+            jsoupUtil = new JsoupUtil();
         }
-        return jsoupUtils;
+        return jsoupUtil;
     }
 
     //获取搜索结果的数目
@@ -58,53 +61,57 @@ public class JsoupUtils {
     //显示所有书的信息
     public List<Book> getTotalBooks(String url) {
         bookUrlList = new ArrayList<>();
-        Document doc = null;
         try {
-            doc = Jsoup.connect(url).get();
-            List<Book> list = new ArrayList<>();
-            Elements elements = doc.select("li");
-            for (Element element : elements) {
-                Book book = new Book();
-                String title = element.select("div.title").text();
-                book.setTitle(title);
-                Elements selects = element.select("p");
-                for (int i = 0; i < selects.size(); i++) {
-                    String content = selects.get(i).text();
-                    if (content.contains("书目信息")) {
-                        book.setPublish(content);
-                    }
-                    if (content.contains("馆藏信息")) {
-                        book.setCount(content);
-                    }
-                    if (content.contains("索书号")) {
-                        book.setNum(content);
-                    }
-                }
-                list.add(book);
-
-                // 保存详情链接
-                String detailUrl = element.select("a").attr("href");
-                bookUrlList.add(bathUrl + detailUrl);
-            }
-
-            // 保存上下页url
-            Element previousElement = doc.select("a.last").first();
-            if (previousElement != null) {
-                previousUrl = previousElement.attr("abs:href");
-            } else {
-                previousUrl = null;
-            }
-            Element nextElement = doc.select("a.next").first();
-            if (nextElement != null) {
-                nextUrl = nextElement.attr("abs:href");
-            } else {
-                nextUrl = null;
-            }
-            return list;
+            Document doc = Jsoup.connect(url).get();
+            return getTotalBooks(doc);
         } catch (IOException e) {
             e.printStackTrace();
             return null;
         }
+    }
+
+    private List<Book> getTotalBooks(Document doc) {
+        bookUrlList = new ArrayList<>();
+        List<Book> list = new ArrayList<>();
+        Elements elements = doc.select("li");
+        for (Element element : elements) {
+            Book book = new Book();
+            String title = element.select("div.title").text();
+            book.setTitle(title);
+            Elements selects = element.select("p");
+            for (int i = 0; i < selects.size(); i++) {
+                String content = selects.get(i).text();
+                if (content.contains("书目信息")) {
+                    book.setPublish(content);
+                }
+                if (content.contains("馆藏信息")) {
+                    book.setCount(content);
+                }
+                if (content.contains("索书号")) {
+                    book.setNum(content);
+                }
+            }
+            list.add(book);
+
+            // 保存详情链接
+            String detailUrl = element.select("a").attr("href");
+            bookUrlList.add(bathUrl + detailUrl);
+        }
+
+        // 保存上下页url
+        Element previousElement = doc.select("a.last").first();
+        if (previousElement != null) {
+            previousUrl = previousElement.attr("abs:href");
+        } else {
+            previousUrl = null;
+        }
+        Element nextElement = doc.select("a.next").first();
+        if (nextElement != null) {
+            nextUrl = nextElement.attr("abs:href");
+        } else {
+            nextUrl = null;
+        }
+        return list;
     }
 
     // 获取详情信息的url
@@ -146,37 +153,50 @@ public class JsoupUtils {
         return nextUrl;
     }
 
-    private Book getDetailBook(String url) {
+    public Book getDetailBook(String url) {
 
         Book book = new Book();
         Document doc = null;
         try {
             doc = Jsoup.connect(url).get();
-            String title = doc.select("div.tit").select("h1").text();
-            String authorContent = doc.select("div.tit").select("p").text().trim();
-            String author = authorContent.substring(authorContent.indexOf(":") + 1);
+            String title = null;
+            String authorContent = null;
+            String author = null;
+            if (doc.select("div.tit").hasClass("tit")) {
+                title = doc.select("div.tit").select("h1").text();
+                authorContent = doc.select("div.tit").select("p").text().trim();
+                author = authorContent.substring(authorContent.indexOf(":") + 1);
+            }
+            String num = null;
+            String location = null;
+            if (doc.select("div.tableCon").hasClass("tabbleCon")) {
+                num = doc.select("div.tableCon").select("td").get(0).text();
+                location = doc.select("div.tableCon").select("td").get(3).text();
+            }
             String publish = null;
-            String num = doc.select("div.tableCon").select("td").get(0).text();
-            String location = doc.select("div.tableCon").select("td").get(3).text();
             String isbn = null;
             String description = null;
-            Elements pElements = doc.select("div.catalog").select("p");
-            for (int i = 0; i < pElements.size(); i++) {
-                String content = pElements.get(i).text().trim();
-                if (content.contains("出版发行项")) {
-                    publish = content.substring(content.indexOf(":") + 1);
-                }
+            if (doc.select("div.catalog").hasClass("catalog")) {
+                Elements pElements = doc.select("div.catalog").select("p");
+                for (int i = 0; i < pElements.size(); i++) {
+                    String content = pElements.get(i).text().trim();
+                    if (content.contains("出版发行项")) {
+                        publish = content.substring(content.indexOf(":") + 1);
+                    }
 
-                if (content.contains("ISBN及定价")) {
-                    // 部份书没有isbn
-                    if (content.substring(content.indexOf(":")).length() > 13) {
-                        content = content.replace("-", "");
-                        isbn = content.substring(content.indexOf(":") + 1, content.indexOf(":") + 13);
+                    if (content.contains("ISBN及定价")) {
+                        // 部份书没有isbn
+                        if (content.substring(content.indexOf(":")).length() > 13) {
+                            content = content.replace("-", "");
+                            isbn = "ISBN：" + content.substring(content.indexOf(":") + 1, content.indexOf(":") + 13);
+                        }
+                    }
+                    if (content.contains("提要文摘附注")) {
+                        description = content.substring(content.indexOf(":") + 1);
                     }
                 }
-                if (content.contains("提要文摘附注")) {
-                    description = content.substring(content.indexOf(":") + 1);
-                }
+            } else {
+                return null;
             }
             book.setTitle(title);
             book.setAuthor(author);

@@ -15,6 +15,7 @@ public class BookViewModel extends ViewModel {
     private MutableLiveData<String> pageInfo;
     private MutableLiveData<List<Book>> bookList;
     private MutableLiveData<Book> detailBook;
+    private boolean isDestroyed = false;
 
     public String getUrl() {
         return url;
@@ -46,5 +47,13 @@ public class BookViewModel extends ViewModel {
             detailBook.postValue(new Book());
         }
         return detailBook;
+    }
+
+    public boolean isDestroyed() {
+        return isDestroyed;
+    }
+
+    public void setDestroyed(boolean destroyed) {
+        isDestroyed = destroyed;
     }
 }

@@ -1,14 +1,7 @@
 package com.example.l.bookssearch;
 
-import com.example.l.bookssearch.model.Book;
-import com.example.l.bookssearch.utils.JsoupUtils;
-
-import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.junit.Test;
-
-import java.io.IOException;
-import java.util.List;
 
 import static org.junit.Assert.*;
 

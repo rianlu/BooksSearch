@@ -15,7 +15,7 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.bumptech.glide.Glide;
 import com.example.l.bookssearch.databinding.FragmentDetailBinding;
-import com.example.l.bookssearch.utils.JsoupUtils;
+import com.example.l.bookssearch.utils.JsoupUtil;
 import com.example.l.bookssearch.viewmodel.BookViewModel;
 
 /**
@@ -25,7 +25,7 @@ public class DetailFragment extends Fragment {
 
     private BookViewModel viewModel;
     private FragmentDetailBinding binding;
-    private JsoupUtils jsoupUtils;
+    private JsoupUtil jsoupUtil;
     private String TAG = "DetailFragment";
 
     public DetailFragment() {
@@ -41,7 +41,7 @@ public class DetailFragment extends Fragment {
         viewModel = ViewModelProviders.of(requireActivity()).get(BookViewModel.class);
         binding.setViewModel(viewModel);
         binding.setLifecycleOwner(requireActivity());
-        jsoupUtils = JsoupUtils.getInstance();
+        jsoupUtil = JsoupUtil.getInstance();
         return binding.getRoot();
     }
 
@@ -57,7 +57,7 @@ public class DetailFragment extends Fragment {
         @Override
         protected String doInBackground(Void... voids) {
 
-            return jsoupUtils.getBookImageFromBaiduBike(viewModel.getDetailBook().getValue().getTitle());
+            return jsoupUtil.getBookImageFromBaiduBike(viewModel.getDetailBook().getValue().getTitle());
         }
 
         @Override

@@ -14,6 +14,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.bumptech.glide.Glide;
+import com.example.l.bookssearch.data.Book;
 import com.example.l.bookssearch.databinding.FragmentDetailBinding;
 import com.example.l.bookssearch.utils.JsoupUtil;
 import com.example.l.bookssearch.viewmodel.BookViewModel;
@@ -36,11 +37,8 @@ public class DetailFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_detail, container, false);
         viewModel = ViewModelProviders.of(requireActivity()).get(BookViewModel.class);
-        binding.setViewModel(viewModel);
-        binding.setLifecycleOwner(requireActivity());
         jsoupUtil = JsoupUtil.getInstance();
         return binding.getRoot();
     }
@@ -50,6 +48,22 @@ public class DetailFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
 
         new ImageAsyncTask().execute();
+
+        Book detailBook = viewModel.getDetailBook().getValue();
+        binding.tvTitle.setText(detailBook.getTitle());
+        binding.tvAuthor.setText(detailBook.getAuthor());
+        binding.tvPublish.setText(detailBook.getPublish());
+        binding.tvLocation.setText(detailBook.getLocation());
+        binding.tvIsbn.setText(detailBook.getIsbn());
+        binding.tvDescription.setText(detailBook.getDescription());
+        Bundle bundle = getArguments();
+        if (bundle != null) {
+            Book book = bundle.getParcelable("currentBook");
+            if (book != null) {
+                detailBook.setNum(book.getNum());
+            }
+        }
+        binding.tvNum.setText(detailBook.getNum());
     }
 
     class ImageAsyncTask extends AsyncTask<Void, Void, String> {

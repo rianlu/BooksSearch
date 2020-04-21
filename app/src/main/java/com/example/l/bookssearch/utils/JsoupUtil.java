@@ -1,11 +1,9 @@
 package com.example.l.bookssearch.utils;
 
-import android.util.Log;
-
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProviders;
 
-import com.example.l.bookssearch.model.Book;
+import com.example.l.bookssearch.data.Book;
 import com.example.l.bookssearch.viewmodel.BookViewModel;
 
 import org.jsoup.Jsoup;
@@ -160,16 +158,16 @@ public class JsoupUtil {
         try {
             doc = Jsoup.connect(url).get();
             String title = null;
-            String authorContent = null;
             String author = null;
             if (doc.select("div.tit").hasClass("tit")) {
                 title = doc.select("div.tit").select("h1").text();
-                authorContent = doc.select("div.tit").select("p").text().trim();
-                author = authorContent.substring(authorContent.indexOf(":") + 1);
+                author = doc.select("div.tit").select("p").text().trim();
+                author = author.substring(author.indexOf(":") + 1);
             }
             String num = null;
             String location = null;
-            if (doc.select("div.tableCon").hasClass("tabbleCon")) {
+            // 馆藏地
+            if (doc.select("div.tableCon").hasClass("tableCon")) {
                 num = doc.select("div.tableCon").select("td").get(0).text();
                 location = doc.select("div.tableCon").select("td").get(3).text();
             }
@@ -178,22 +176,32 @@ public class JsoupUtil {
             String description = null;
             if (doc.select("div.catalog").hasClass("catalog")) {
                 Elements pElements = doc.select("div.catalog").select("p");
-                for (int i = 0; i < pElements.size(); i++) {
+                publish = pElements.get(0).text().trim();
+                if (publish.contains("出版发行项")) {
+                    publish = publish.substring(publish.indexOf(":") + 1);
+                } else {
+                    return null;
+                }
+                isbn = pElements.get(1).text().trim();
+                if (isbn.contains("ISBN及定价")) {
+                    // 部份书没有isbn
+                    if (isbn.substring(isbn.indexOf(":")).length() > 13) {
+                        isbn = isbn.replace("-", "");
+                        isbn = "ISBN：" + isbn.substring(isbn.indexOf(":") + 1, isbn.indexOf(":") + 13);
+                    }
+                } else {
+                    return null;
+                }
+                boolean hasDescription = false;
+                for (int i = 0; i < pElements.size(); i ++) {
                     String content = pElements.get(i).text().trim();
-                    if (content.contains("出版发行项")) {
-                        publish = content.substring(content.indexOf(":") + 1);
-                    }
-
-                    if (content.contains("ISBN及定价")) {
-                        // 部份书没有isbn
-                        if (content.substring(content.indexOf(":")).length() > 13) {
-                            content = content.replace("-", "");
-                            isbn = "ISBN：" + content.substring(content.indexOf(":") + 1, content.indexOf(":") + 13);
-                        }
-                    }
                     if (content.contains("提要文摘附注")) {
                         description = content.substring(content.indexOf(":") + 1);
+                        hasDescription = true;
                     }
+                }
+                if (!hasDescription) {
+                    return null;
                 }
             } else {
                 return null;

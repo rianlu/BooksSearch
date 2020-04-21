@@ -3,12 +3,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <data>
-        <variable
-            name="viewModel"
-            type="com.example.l.bookssearch.viewmodel.BookViewModel" />
-    </data>
-
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -38,7 +32,6 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
-                android:text="@{viewModel.detailBook.title}"
                 android:textSize="30sp"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toTopOf="@+id/guideline9"
@@ -50,7 +43,6 @@
                 android:id="@+id/tvAuthor"
                 android:layout_width="215dp"
                 android:layout_height="wrap_content"
-                android:text="@{viewModel.detailBook.author}"
                 app:layout_constraintBottom_toTopOf="@+id/tvPublish"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="@+id/guideline11"
@@ -80,7 +72,6 @@
                 android:id="@+id/tvPublish"
                 android:layout_width="215dp"
                 android:layout_height="wrap_content"
-                android:text="@{viewModel.detailBook.publish}"
                 app:layout_constraintBottom_toTopOf="@+id/tvNum"
                 app:layout_constraintEnd_toEndOf="@+id/tvAuthor"
                 app:layout_constraintStart_toStartOf="@+id/tvAuthor"
@@ -90,7 +81,6 @@
                 android:id="@+id/tvLocation"
                 android:layout_width="215dp"
                 android:layout_height="wrap_content"
-                android:text="@{viewModel.detailBook.location}"
                 app:layout_constraintBottom_toTopOf="@+id/tvIsbn"
                 app:layout_constraintEnd_toEndOf="@+id/tvNum"
                 app:layout_constraintStart_toStartOf="@+id/tvNum"
@@ -100,7 +90,6 @@
                 android:id="@+id/tvNum"
                 android:layout_width="215dp"
                 android:layout_height="wrap_content"
-                android:text="@{viewModel.detailBook.num}"
                 app:layout_constraintBottom_toTopOf="@+id/tvLocation"
                 app:layout_constraintEnd_toEndOf="@+id/tvPublish"
                 app:layout_constraintStart_toStartOf="@+id/tvPublish"
@@ -135,13 +124,12 @@
                 app:layout_constraintGuide_percent="0.6" />
 
             <TextView
-                android:id="@+id/textView8"
+                android:id="@+id/tvDescription"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
                 android:layout_marginBottom="16dp"
-                android:text="@{viewModel.detailBook.description}"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -151,7 +139,6 @@
                 android:id="@+id/tvIsbn"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="@{viewModel.detailBook.isbn}"
                 app:layout_constraintBottom_toTopOf="@+id/textView7"
                 app:layout_constraintEnd_toEndOf="@+id/tvLocation"
                 app:layout_constraintStart_toStartOf="@+id/tvLocation"

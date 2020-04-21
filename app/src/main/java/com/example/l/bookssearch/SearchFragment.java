@@ -29,7 +29,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.l.bookssearch.adapter.MyAdapter;
 import com.example.l.bookssearch.databinding.FragmentSearchBinding;
-import com.example.l.bookssearch.model.Book;
+import com.example.l.bookssearch.data.Book;
 import com.example.l.bookssearch.utils.JsoupUtil;
 import com.example.l.bookssearch.viewmodel.BookViewModel;
 
@@ -120,7 +120,9 @@ public class SearchFragment extends Fragment {
                                         @Override
                                         public void run() {
                                             NavController controller = Navigation.findNavController(view);
-                                            controller.navigate(R.id.action_searchFragment_to_detailFragment);
+                                            Bundle bundle = new Bundle();
+                                            bundle.putParcelable("currentBook", viewModel.getBookList().getValue().get(position));
+                                            controller.navigate(R.id.action_searchFragment_to_detailFragment, bundle);
                                         }
                                     });
                                 } else {

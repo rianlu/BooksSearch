@@ -1,10 +1,9 @@
 package com.example.l.bookssearch.viewmodel;
 
-import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.example.l.bookssearch.model.Book;
+import com.example.l.bookssearch.data.Book;
 
 import java.util.ArrayList;
 import java.util.List;

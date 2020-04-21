@@ -8,7 +8,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.l.bookssearch.model.Book;
+import com.example.l.bookssearch.data.Book;
 import com.example.l.bookssearch.R;
 
 import java.util.List;

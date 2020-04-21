@@ -1,6 +1,9 @@
-package com.example.l.bookssearch.model;
+package com.example.l.bookssearch.data;
 
-public class Book {
+import android.os.Parcel;
+import android.os.Parcelable;
+
+public class Book implements Parcelable {
     private String title;
     private String author;
     private String publish;
@@ -9,6 +12,33 @@ public class Book {
     private String location;
     private String isbn;
     private String description;
+
+
+    public Book() {
+
+    }
+    Book(Parcel in) {
+        title = in.readString();
+        author = in.readString();
+        publish = in.readString();
+        count = in.readString();
+        num = in.readString();
+        location = in.readString();
+        isbn = in.readString();
+        description = in.readString();
+    }
+
+    public static final Creator<Book> CREATOR = new Creator<Book>() {
+        @Override
+        public Book createFromParcel(Parcel in) {
+            return new Book(in);
+        }
+
+        @Override
+        public Book[] newArray(int size) {
+            return new Book[size];
+        }
+    };
 
     public String getTitle() {
         return title;
@@ -86,5 +116,23 @@ public class Book {
                 ", isbn='" + isbn + '\'' +
                 ", description='" + description + '\'' +
                 '}';
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+
+        parcel.writeString(title);
+        parcel.writeString(author);
+        parcel.writeString(publish);
+        parcel.writeString(count);
+        parcel.writeString(num);
+        parcel.writeString(location);
+        parcel.writeString(isbn);
+        parcel.writeString(description);
     }
 }

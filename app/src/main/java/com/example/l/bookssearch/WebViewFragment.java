@@ -14,6 +14,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebChromeClient;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -47,6 +48,7 @@ public class WebViewFragment extends Fragment {
         if (bundle != null) {
             detailUrl = bundle.getString("detailUrl");
             WebView webView = requireActivity().findViewById(R.id.webView);
+            webView.getSettings().setJavaScriptEnabled(true);
             webView.loadUrl(detailUrl);
             webView.setWebViewClient(new WebViewClient() {
                 @Override
@@ -55,6 +57,7 @@ public class WebViewFragment extends Fragment {
                     return true;
                 }
             });
+            webView.setWebChromeClient(new WebChromeClient());
         }
     }
 

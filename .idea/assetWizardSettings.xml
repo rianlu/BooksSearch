@@ -28,9 +28,10 @@
                         </option>
                         <option name="values">
                           <map>
+                            <entry key="assetSourceType" value="FILE" />
                             <entry key="color" value="ffffff" />
-                            <entry key="outputName" value="default_picture" />
-                            <entry key="sourceFile" value="C:\Users\24694" />
+                            <entry key="outputName" value="ic_no_image" />
+                            <entry key="sourceFile" value="C:\Users\Lu\Desktop\暂无图片.svg" />
                           </map>
                         </option>
                       </PersistentState>

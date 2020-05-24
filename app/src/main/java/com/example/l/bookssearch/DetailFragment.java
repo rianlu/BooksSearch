@@ -60,7 +60,7 @@ public class DetailFragment extends Fragment {
         if (bundle != null) {
             Book book = bundle.getParcelable("currentBook");
             if (book != null) {
-                detailBook.setNum(book.getNum());
+                 detailBook.setNum(book.getNum());
             }
         }
         binding.tvNum.setText(detailBook.getNum());

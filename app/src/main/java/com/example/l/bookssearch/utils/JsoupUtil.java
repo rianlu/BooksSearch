@@ -87,8 +87,10 @@ public class JsoupUtil {
                 }
                 if (content.contains("索书号")) {
                     if (content.length() <= 4) {
+                        book.setNum(content + "暂无");
+                    } else {
+                        book.setNum(content);
                     }
-                    book.setNum(content + "暂无");
                 }
             }
             list.add(book);

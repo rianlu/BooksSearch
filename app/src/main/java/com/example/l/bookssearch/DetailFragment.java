@@ -65,6 +65,7 @@ public class DetailFragment extends Fragment {
         binding.tvIsbn.setText(detailBook.getIsbn());
         binding.tvDescription.setText(detailBook.getDescription());
         Bundle bundle = getArguments();
+        detailUrl = bundle.getString("detailUrl");
         if (bundle != null) {
             Book book = bundle.getParcelable("currentBook");
             if (book != null) {

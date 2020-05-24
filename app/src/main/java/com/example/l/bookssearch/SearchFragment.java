@@ -111,10 +111,10 @@ public class SearchFragment extends Fragment {
                             return;
                         }
                         startTime = System.currentTimeMillis();
+                        String detailUrl = jsoupUtil.getBookDetailUrl(position);
                         new Thread(new Runnable() {
                             @Override
                             public void run() {
-                                String detailUrl = jsoupUtil.getBookDetailUrl(position);
                                 if (jsoupUtil.checkBookFormat(detailUrl, requireActivity())) {
                                     requireActivity().runOnUiThread(new Runnable() {
                                         @Override
@@ -122,6 +122,7 @@ public class SearchFragment extends Fragment {
                                             NavController controller = Navigation.findNavController(view);
                                             Bundle bundle = new Bundle();
                                             bundle.putParcelable("currentBook", viewModel.getBookList().getValue().get(position));
+                                            bundle.putString("detailUrl", detailUrl);
                                             controller.navigate(R.id.action_searchFragment_to_detailFragment, bundle);
                                         }
                                     });

@@ -13,4 +13,9 @@
     <string name="radio_btn_isbn">ISBN</string>
     <string name="radio_btn_author">作者</string>
     <string name="radio_btn_title">书名</string>
+
+    <string name="app_info">
+        &#160;&#160;&#160;&#160;该应用为个人学习之余开发，非学校官方应用。\n
+        &#160;&#160;&#160;&#160;数据来自学校图书馆公众号：浙江水院图书馆，\n
+        &#160;&#160;&#160;&#160;扫描下方二维码关注以体验更多功能：</string>
 </resources>

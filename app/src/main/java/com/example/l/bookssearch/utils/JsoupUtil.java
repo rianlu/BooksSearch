@@ -22,7 +22,7 @@ public class JsoupUtil {
     // http://agentdockingopac.featurelib.libsou.com/showhome/searchlist/opacSearchList?search=java&xc=3&schoolId=1082&centerDomain=&searchtype=title
     // http://agentdockingopac.featurelib.libsou.com/showhome/searchlist/opacSearchList?search=java&xc=3&schoolId=1082&centerDomain=&searchtype=title&page=1
 
-    private final String bathUrl = "http ://agentdockingopac.featurelib.libsou.com/";
+    private final String bathUrl = "http://agentdockingopac.featurelib.libsou.com/";
 
     private static JsoupUtil jsoupUtil = null;
     private List<String> bookUrlList = null;

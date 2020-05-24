@@ -11,6 +11,8 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
@@ -48,10 +50,11 @@ public class SearchFragment extends Fragment {
     // 用于屏蔽快速点击
     private long startTime = 0;
 
-    public SearchFragment() {
-        // Required empty public constructor
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
     }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -130,7 +133,7 @@ public class SearchFragment extends Fragment {
                                     requireActivity().runOnUiThread(new Runnable() {
                                         @Override
                                         public void run() {
-                                            Toast.makeText(getContext(), "当前图书不符合查询格式，将使用浏览器打开", Toast.LENGTH_SHORT).show();
+                                            Toast.makeText(getContext(), "当前图书不符合查询格式，将加载原网页", Toast.LENGTH_SHORT).show();
                                             NavController controller = Navigation.findNavController(view);
                                             Bundle bundle = new Bundle();
                                             bundle.putString("detailUrl", detailUrl);
@@ -218,5 +221,11 @@ public class SearchFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         viewModel.setDestroyed(true);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        menu.clear();
+        super.onCreateOptionsMenu(menu, inflater);
     }
 }

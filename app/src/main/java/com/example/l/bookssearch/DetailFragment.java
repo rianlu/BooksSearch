@@ -1,10 +1,15 @@
 package com.example.l.bookssearch;
 
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -28,12 +33,14 @@ public class DetailFragment extends Fragment {
     private BookViewModel viewModel;
     private FragmentDetailBinding binding;
     private JsoupUtil jsoupUtil;
-    private String TAG = "DetailFragment";
+    private String TAG = DetailFragment.class.getName();
+    private String detailUrl = null;
 
-    public DetailFragment() {
-        // Required empty public constructor
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
     }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -84,5 +91,21 @@ public class DetailFragment extends Fragment {
                         .into(binding.imageView);
             }
         }
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.open_with_brower:
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(detailUrl));
+                startActivity(intent);
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

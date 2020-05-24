@@ -130,8 +130,10 @@ public class SearchFragment extends Fragment {
                                         @Override
                                         public void run() {
                                             Toast.makeText(getContext(), "当前图书不符合查询格式，将使用浏览器打开", Toast.LENGTH_SHORT).show();
-                                            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(detailUrl));
-                                            startActivity(intent);
+                                            NavController controller = Navigation.findNavController(view);
+                                            Bundle bundle = new Bundle();
+                                            bundle.putString("detailUrl", detailUrl);
+                                            controller.navigate(R.id.action_searchFragment_to_webViewFragment, bundle);
                                         }
                                     });
                                 }

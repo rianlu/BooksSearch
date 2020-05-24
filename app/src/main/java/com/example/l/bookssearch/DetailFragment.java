@@ -65,8 +65,8 @@ public class DetailFragment extends Fragment {
         binding.tvIsbn.setText(detailBook.getIsbn());
         binding.tvDescription.setText(detailBook.getDescription());
         Bundle bundle = getArguments();
-        detailUrl = bundle.getString("detailUrl");
         if (bundle != null) {
+            detailUrl = bundle.getString("detailUrl");
             Book book = bundle.getParcelable("currentBook");
             if (book != null) {
                  detailBook.setNum(book.getNum());
@@ -104,8 +104,10 @@ public class DetailFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.open_with_brower:
-                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(detailUrl));
-                startActivity(intent);
+                if (detailUrl != null) {
+                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(detailUrl));
+                    startActivity(intent);
+                }
         }
         return super.onOptionsItemSelected(item);
     }

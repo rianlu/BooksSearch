@@ -70,8 +70,10 @@ public class WebViewFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.open_with_brower:
-                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(detailUrl));
-                startActivity(intent);
+                if (detailUrl != null) {
+                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(detailUrl));
+                    startActivity(intent);
+                }
         }
         return super.onOptionsItemSelected(item);
     }

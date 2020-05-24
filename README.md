@@ -26,6 +26,12 @@ ISBN查询：97875622576
 
 ![img](https://github.com/rianlu/BooksSearch/blob/master/images/img5.png)
 
+
+
+2020.05.24
+
+使用WebView打开不符合解析格式的图书，也可以选择调用系统浏览器打开
+
  
 
 ### 补充
